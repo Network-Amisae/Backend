@@ -1,0 +1,33 @@
+[
+  {
+    "time_offset_ms": 1000,
+    "target_id": "AMR_01",
+    "command": "DELIVER_PART",
+    "description": "AMR_01에게 Cell_A로 부품 운반 지시",
+    "task_id": "AMR_T101",
+    "payload": {
+      "cargo": {
+        "item_id": "Motor_Unit",
+        "quantity": 1
+      },
+      "destination_cell": "CELL_A"
+    }
+  },
+  {
+    "time_offset_ms": 7000,
+    "target_id": "AMR_02",
+    "command": "MOVE_TO_BASE",
+    "description": "AMR_02에게 충전 스테이션으로 이동 지시",
+    "task_id": "AMR_T102",
+    "payload": {
+      "target_location": "CHARGE_DOCK_1"
+    }
+  },
+  {
+    "time_offset_ms": 4000,
+    "target_id": "AMR_01",
+    "command": "EMERGENCY_STOP",
+    "description": "AMR_01에게 즉시 비상 정지 명령",
+    "task_id": "AMR_T103"
+  }
+]
