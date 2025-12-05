@@ -1,6 +1,6 @@
 [
   {
-    "time_offset_ms": 1000,
+    "time_offset_ms": 3000,
     "target_id": "AMR_01",
     "command": "DELIVER_PART",
     "description": "AMR_01에게 Cell_A로 부품 운반 지시",
@@ -14,7 +14,7 @@
     }
   },
   {
-    "time_offset_ms": 7000,
+    "time_offset_ms": 15000,
     "target_id": "AMR_02",
     "command": "MOVE_TO_BASE",
     "description": "AMR_02에게 충전 스테이션으로 이동 지시",
@@ -24,7 +24,7 @@
     }
   },
   {
-    "time_offset_ms": 4000,
+    "time_offset_ms": 25000,
     "target_id": "AMR_01",
     "command": "EMERGENCY_STOP",
     "description": "AMR_01에게 즉시 비상 정지 명령",

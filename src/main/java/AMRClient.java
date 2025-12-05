@@ -1,4 +1,3 @@
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -9,15 +8,26 @@ import java.net.Socket;
 
 public class AMRClient {
     private static final String SERVER_IP = "127.0.0.1";
-    private static final int PORT = 8888; // AMR DCC 서버 포트
-    private static final String MY_ID = "AMR_01"; // 내 ID
+    private static final int PORT = 8888;
+
+    // [수정 1] final을 제거하고 인스턴스 변수로 변경 (고정값 삭제)
+    private String myId;
 
     private Socket socket;
     private PrintWriter out;
     private boolean isRunning = true;
 
+    // [수정 2] 생성자에서 ID를 설정하도록 변경
+    public AMRClient(String id) {
+        this.myId = id;
+    }
+
     public static void main(String[] args) {
-        new AMRClient().start();
+        // [수정 3] 실행 시 입력된 인자가 있으면 그걸 ID로 사용, 없으면 기본값 AMR_01
+        String clientId = (args.length > 0) ? args[0] : "AMR_01";
+        System.out.println(">> 클라이언트 시작 모드: " + clientId);
+
+        new AMRClient(clientId).start();
     }
 
     public void start() {
@@ -26,22 +36,20 @@ public class AMRClient {
             out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
-            System.out.println(">> [AMR] 서버 연결 성공 (" + MY_ID + ")");
+            System.out.println(">> [AMR] 서버 연결 성공 (" + myId + ")");
 
-            // 1. [수정] 접속 시 STATUS 보고 (Active)
-            // 인자 4개: (ID, 장비타입, 모드, 점유여부)
-            // AMR은 점유여부(isOccupied)가 없으므로 false로 넘깁니다.
-            String loginPacket = JsonPacketBuilder.createStatusPacket(MY_ID, "AMR", "ACTIVE", false);
+            // [수정 4] MY_ID 대신 myId 변수 사용
+            // 접속 시 STATUS 보고 (Active)
+            String loginPacket = JsonPacketBuilder.createStatusPacket(myId, "AMR", "ACTIVE", false);
             out.println(loginPacket);
 
-            // 2. 수신 대기 루프
             String line;
             while (isRunning && (line = in.readLine()) != null) {
                 handleServerMessage(line);
             }
 
         } catch (IOException e) {
-            System.err.println(">> [AMR ERROR] 연결 실패: " + e.getMessage());
+            System.err.println(">> [" + myId + " ERROR] 연결 실패: " + e.getMessage());
         } finally {
             try {
                 if (socket != null && !socket.isClosed()) socket.close();
@@ -49,7 +57,6 @@ public class AMRClient {
         }
     }
 
-    // 서버 메시지 처리 (라우팅 및 명령 수행)
     private void handleServerMessage(String jsonStr) {
         try {
             JSONObject root = new JSONObject(jsonStr);
@@ -57,54 +64,43 @@ public class AMRClient {
             String type = header.getString("type");
             String receiver = header.getString("receiver_id");
 
-            // 나한테 온 메시지인지 확인 (Broadcast 포함)
-            if (!receiver.equals(MY_ID) && !receiver.equals("ALL")) return;
+            // [수정 5] 수신자가 '나(myId)'인 경우만 처리
+            if (!receiver.equals(myId) && !receiver.equals("ALL")) return;
 
-            // 로그 출력 (채팅 로그 역할)
             System.out.println("<< 수신: " + header.getString("log_text"));
 
-            // Spec 2.1: 물류 임무 할당 (COMMAND) 처리
             if (type.equals("COMMAND")) {
                 JSONObject body = root.getJSONObject("body");
                 String command = body.getString("command");
 
                 if ("DELIVER_PART".equals(command) || "MOVE_CMD".equals(command)) {
-                    // 이동 시뮬레이션 스레드 시작 (메인 스레드 차단 방지)
                     new Thread(() -> simulateMovement(body)).start();
                 }
             }
 
         } catch (Exception e) {
-            System.out.println(">> [AMR ERROR] JSON 파싱 에러: " + e.getMessage());
+            System.out.println(">> [" + myId + " ERROR] JSON 파싱 에러: " + e.getMessage());
         }
     }
 
-    // 이동 시뮬레이션 및 상태 보고 (Spec 2.3B 및 2.4)
     private void simulateMovement(JSONObject body) {
         try {
             JSONObject payload = body.getJSONObject("payload");
             String taskId = body.getString("task_id");
             String dest = payload.optString("target_cell", "BASE_STATION");
 
-            System.out.println(">> [동작] 이동 시작 -> 목적지: " + dest);
+            System.out.println(">> [동작] " + myId + " 이동 시작 -> " + dest);
 
-            // 1. 이동 시뮬레이션
-            Thread.sleep(5000); // 5초간 이동 시뮬레이션
+            Thread.sleep(5000);
 
-            // 2. 도착 후 처리 및 보고
-
-            // [수정] Spec 2.4: 도착 및 작업 완료 알림 (ACK)
-            // 반드시 "AMR" 타입을 명시해야 DCC_SERVER로 전송됩니다.
+            // [수정 6] ACK 및 상태 보고 시 myId 사용
             String ackCommand = "ARRIVED_AT_" + dest.toUpperCase();
-            String ackPacket = JsonPacketBuilder.createAckPacket(MY_ID, "AMR", taskId, ackCommand);
+            String ackPacket = JsonPacketBuilder.createAckPacket(myId, "AMR", taskId, ackCommand);
             out.println(ackPacket);
             System.out.println(">> [전송] 작업 완료 ACK: " + ackCommand);
 
-            // [수정] Spec 2.3B: 작업 완료 후 상태 업데이트 (Inactive)
-            // 인자 4개: (ID, 장비타입, 모드, 점유여부)
-            out.println(JsonPacketBuilder.createStatusPacket(MY_ID, "AMR", "INACTIVE", false));
+            out.println(JsonPacketBuilder.createStatusPacket(myId, "AMR", "INACTIVE", false));
             System.out.println(">> [전송] 상태 보고: INACTIVE");
-
 
         } catch (InterruptedException e) {
             e.printStackTrace();
