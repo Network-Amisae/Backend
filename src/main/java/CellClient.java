@@ -44,6 +44,7 @@ public class CellClient {
         try {
             JSONObject root = new JSONObject(jsonStr);
             JSONObject header = root.getJSONObject("header");
+            JSONObject body = root.getJSONObject("body");
             String type = header.getString("type");
             String sender = header.getString("sender_id");
 
@@ -54,7 +55,12 @@ public class CellClient {
             // 시나리오: AGV가 도착했다고 알림이 오면 작업을 시작함
             // (서버나 AGV가 "ARRIVED" type이나 특정 body를 보냈다고 가정)
             if (type.equals("EVENT") || header.optString("log_text").contains("도착")) {
-                simulateWork(sender); // sender는 도착한 AGV ID
+                String realAgvId = "Unknown";
+                if(body.has("payload")) {
+                    realAgvId = body.getJSONObject("payload").optString("agv_id", sender);
+                }
+
+                simulateWork(realAgvId);
             }
 
         } catch (Exception e) {
