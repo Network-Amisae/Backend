@@ -1,38 +1,95 @@
 [
   {
-    "time_offset_ms": 2000,
-    "target_id": "AGV_01",
-    "message_type": "COMMAND",
-    "command": "MOVE_PATH",
-    "task_id": "T_01_A",
-    "payload": {
-      "final_dest": "CELL_01",
-      "waypoints": ["QR_ROAD_01", "QR_ROAD_02", "QR_CELL_01_IN"]
-    },
-    "description": "[AGV_01] 작업 시작 (Cell_1 이동)"
-  },
-  {
-    "time_offset_ms": 4000,
-    "target_id": "AGV_02",
-    "message_type": "COMMAND",
-    "command": "MOVE_PATH",
-    "task_id": "T_02_A",
-    "payload": {
-      "final_dest": "CELL_03",
-      "waypoints": ["QR_ROAD_10", "QR_ROAD_11", "QR_CELL_03_IN"]
-    },
-    "description": "[AGV_02] 2초 뒤 출발 (Cell_3 이동)"
-  },
-  {
     "time_offset_ms": 15000,
     "target_id": "AGV_01",
     "message_type": "COMMAND",
     "command": "MOVE_PATH",
-    "task_id": "T_01_B",
+    "task_id": "TASK_001",
+    "payload": {
+      "final_dest": "CELL_01",
+      "waypoints": ["QR_ROAD_01", "QR_ROAD_02", "QR_CELL_01_IN"]
+    },
+    "description": "[AGV_01] Cell_01로 이동 시작 (부품 운송)"
+  },
+  {
+    "time_offset_ms": 17000,
+    "target_id": "AGV_02",
+    "message_type": "COMMAND",
+    "command": "MOVE_PATH",
+    "task_id": "TASK_002",
+    "payload": {
+      "final_dest": "CELL_03",
+      "waypoints": ["QR_ROAD_10", "QR_ROAD_11", "QR_CELL_03_IN"]
+    },
+    "description": "[AGV_02] Cell_03으로 이동 시작 (부품 운송)"
+  },
+  {
+    "time_offset_ms": 25000,
+    "target_id": "CELL_01",
+    "message_type": "EVENT",
+    "command": "NOTIFY_ARRIVAL",
+    "task_id": "EVT_ARRIVE_01",
+    "payload": {
+      "agv_id": "AGV_01"
+    },
+    "description": "[Sensor] AGV_01 -> Cell_01 도착 감지 (작업 시작)"
+  },
+  {
+    "time_offset_ms": 27000,
+    "target_id": "CELL_03",
+    "message_type": "EVENT",
+    "command": "NOTIFY_ARRIVAL",
+    "task_id": "EVT_ARRIVE_02",
+    "payload": {
+      "agv_id": "AGV_02"
+    },
+    "description": "[Sensor] AGV_02 -> Cell_03 도착 감지 (작업 시작)"
+  },
+  {
+    "time_offset_ms": 35000,
+    "target_id": "AGV_01",
+    "message_type": "COMMAND",
+    "command": "MOVE_PATH",
+    "task_id": "TASK_003",
+    "payload": {
+      "final_dest": "CELL_02",
+      "waypoints": ["QR_CELL_01_OUT", "QR_ROAD_05", "QR_CELL_02_IN"]
+    },
+    "description": "[AGV_01] 조립품 싣고 Cell_02로 이동"
+  },
+  {
+    "time_offset_ms": 37000,
+    "target_id": "AGV_02",
+    "message_type": "COMMAND",
+    "command": "MOVE_PATH",
+    "task_id": "TASK_004",
     "payload": {
       "final_dest": "WAREHOUSE",
-      "waypoints": ["QR_CELL_01_OUT", "QR_END"]
+      "waypoints": ["QR_CELL_03_OUT", "QR_END"]
     },
-    "description": "[AGV_01] 작업 종료 및 복귀"
+    "description": "[AGV_02] 임무 완료, 복귀"
+  },
+  {
+    "time_offset_ms": 45000,
+    "target_id": "CELL_02",
+    "message_type": "EVENT",
+    "command": "NOTIFY_ARRIVAL",
+    "task_id": "EVT_ARRIVE_03",
+    "payload": {
+      "agv_id": "AGV_01"
+    },
+    "description": "[Sensor] AGV_01 -> Cell_02 도착 감지 (2차 조립)"
+  },
+  {
+    "time_offset_ms": 55000,
+    "target_id": "AGV_01",
+    "message_type": "COMMAND",
+    "command": "MOVE_PATH",
+    "task_id": "TASK_005",
+    "payload": {
+      "final_dest": "PRODUCT_AREA",
+      "waypoints": ["QR_CELL_02_OUT", "QR_FINISH"]
+    },
+    "description": "[AGV_01] 완성차 하역장으로 이동"
   }
 ]
