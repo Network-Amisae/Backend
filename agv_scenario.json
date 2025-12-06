@@ -1,38 +1,38 @@
 [
   {
-    "time_offset_ms": 3000,
+    "time_offset_ms": 2000,
     "target_id": "AGV_01",
     "message_type": "COMMAND",
     "command": "MOVE_PATH",
-    "task_id": "TASK_001",
+    "task_id": "T_01_A",
     "payload": {
       "final_dest": "CELL_01",
       "waypoints": ["QR_ROAD_01", "QR_ROAD_02", "QR_CELL_01_IN"]
     },
-    "description": "AGV가 대기소에서 첫 번째 작업 셀로 이동"
+    "description": "[AGV_01] 작업 시작 (Cell_1 이동)"
+  },
+  {
+    "time_offset_ms": 4000,
+    "target_id": "AGV_02",
+    "message_type": "COMMAND",
+    "command": "MOVE_PATH",
+    "task_id": "T_02_A",
+    "payload": {
+      "final_dest": "CELL_03",
+      "waypoints": ["QR_ROAD_10", "QR_ROAD_11", "QR_CELL_03_IN"]
+    },
+    "description": "[AGV_02] 2초 뒤 출발 (Cell_3 이동)"
   },
   {
     "time_offset_ms": 15000,
     "target_id": "AGV_01",
     "message_type": "COMMAND",
     "command": "MOVE_PATH",
-    "task_id": "TASK_002",
-    "payload": {
-      "final_dest": "CELL_02",
-      "waypoints": ["QR_CELL_01_OUT", "QR_ROAD_03", "QR_CELL_02_IN"]
-    },
-    "description": "조립 완료 후 두 번째 셀로 이동"
-  },
-  {
-    "time_offset_ms": 25000,
-    "target_id": "AGV_01",
-    "message_type": "COMMAND",
-    "command": "MOVE_PATH",
-    "task_id": "TASK_003",
+    "task_id": "T_01_B",
     "payload": {
       "final_dest": "WAREHOUSE",
-      "waypoints": ["QR_CELL_02_OUT", "QR_ROAD_04", "QR_END"]
+      "waypoints": ["QR_CELL_01_OUT", "QR_END"]
     },
-    "description": "모든 공정 종료 후 퇴장"
+    "description": "[AGV_01] 작업 종료 및 복귀"
   }
 ]
