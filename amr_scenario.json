@@ -1,33 +1,89 @@
 [
   {
-    "time_offset_ms": 3000,
+    "time_offset_ms": 19000,
     "target_id": "AMR_01",
-    "command": "DELIVER_PART",
-    "description": "AMR_01에게 Cell_A로 부품 운반 지시",
-    "task_id": "AMR_T101",
+    "message_type": "COMMAND",
+    "command": "MOVE_PATH",
+    "task_id": "TASK_AMR_01",
     "payload": {
-      "cargo": {
-        "item_id": "Motor_Unit",
-        "quantity": 1
-      },
-      "destination_cell": "CELL_A"
-    }
+      "final_dest": "CELL_01",
+      "action": "LOAD_TRAY"
+    },
+    "description": "[AMR_01] Cell_01로 이동 시작 (AGV 뒤따라 출발)"
   },
   {
-    "time_offset_ms": 15000,
+    "time_offset_ms": 21000,
     "target_id": "AMR_02",
-    "command": "MOVE_TO_BASE",
-    "description": "AMR_02에게 충전 스테이션으로 이동 지시",
-    "task_id": "AMR_T102",
+    "message_type": "COMMAND",
+    "command": "MOVE_PATH",
+    "task_id": "TASK_AMR_02",
     "payload": {
-      "target_location": "CHARGE_DOCK_1"
-    }
+      "final_dest": "CELL_03",
+      "action": "LOAD_TRAY"
+    },
+    "description": "[AMR_02] Cell_03으로 이동 시작"
   },
   {
-    "time_offset_ms": 25000,
+    "time_offset_ms": 29000,
+    "target_id": "CELL_01",
+    "message_type": "EVENT",
+    "command": "NOTIFY_ARRIVAL",
+    "task_id": "EVT_AMR_ARR_01",
+    "payload": { "amr_id": "AMR_01" },
+    "description": "[Sensor] AMR_01 -> Cell_01 도착 감지"
+  },
+  {
+    "time_offset_ms": 31000,
+    "target_id": "CELL_03",
+    "message_type": "EVENT",
+    "command": "NOTIFY_ARRIVAL",
+    "task_id": "EVT_AMR_ARR_02",
+    "payload": { "amr_id": "AMR_02" },
+    "description": "[Sensor] AMR_02 -> Cell_03 도착 감지"
+  },
+  {
+    "time_offset_ms": 39000,
     "target_id": "AMR_01",
-    "command": "EMERGENCY_STOP",
-    "description": "AMR_01에게 즉시 비상 정지 명령",
-    "task_id": "AMR_T103"
+    "message_type": "COMMAND",
+    "command": "MOVE_PATH",
+    "task_id": "TASK_AMR_03",
+    "payload": {
+      "final_dest": "CELL_02",
+      "action": "UNLOAD_AND_PROCESS"
+    },
+    "description": "[AMR_01] 조립품 싣고 Cell_02로 이동"
+  },
+  {
+    "time_offset_ms": 41000,
+    "target_id": "AMR_02",
+    "message_type": "COMMAND",
+    "command": "MOVE_PATH",
+    "task_id": "TASK_AMR_04",
+    "payload": {
+      "final_dest": "WAREHOUSE",
+      "action": "CHARGE_BATTERY"
+    },
+    "description": "[AMR_02] 임무 완료, 복귀"
+  },
+  {
+    "time_offset_ms": 49000,
+    "target_id": "CELL_02",
+    "message_type": "EVENT",
+    "command": "NOTIFY_ARRIVAL",
+    "task_id": "EVT_AMR_ARR_03",
+    "payload": { "amr_id": "AMR_01" },
+    "description": "[Sensor] AMR_01 -> Cell_02 도착 감지"
+  },
+  {
+    "time_offset_ms": 59000,
+    "target_id": "AMR_01",
+    "message_type": "COMMAND",
+    "command": "MOVE_PATH",
+    "task_id": "TASK_AMR_05",
+    "payload": {
+      "final_dest": "PRODUCT_AREA",
+      "action": "UNLOAD_FINAL"
+    },
+    "description": "[AMR_01] 완성차 하역장으로 이동"
   }
 ]
