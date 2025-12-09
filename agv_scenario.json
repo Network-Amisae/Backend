@@ -1,126 +1,86 @@
 [
   {
     "time_offset_ms": 5000,
-    "target_id": "AGV_01",
     "sender_id": "AGV_SERVER",
     "receiver_id": "AGV_01",
     "message_type": "COMMAND",
     "command": "MOVE_PATH",
-    "task_id": "TASK_AGV_01",
-    "payload": {
-      "final_dest": "CELL_01",
-      "waypoints": ["QR_START", "QR_L1", "QR_C1_IN"]
-    },
-    "description": "[AGV_SERVER->AGV] 명령: CELL_01 앞으로 이동해주세요"
+    "description": "CELL_01로 이동합니다."
   },
   {
+    "time_offset_ms": 8000,
+    "sender_id": "AGV_SERVER",
+    "receiver_id": "AGV_02",
+    "message_type": "COMMAND",
+    "command": "MOVE_PATH",
+    "description": "CELL_03로 이동합니다."
+  },
+
+  {
     "time_offset_ms": 15000,
-    "target_id": "AGV_SERVER",
     "sender_id": "AGV_01",
     "receiver_id": "AGV_SERVER",
     "message_type": "STATUS",
     "command": "NOTIFY_ARRIVAL",
-    "task_id": "EVT_AGV_ARR_01",
-    "payload": {
-      "current_loc": "CELL_01",
-      "status": "ARRIVED"
-    },
-    "description": "[AGV->AGV_SERVER] 보고: CELL_01 도착했습니다"
+    "description": "CELL_01 도착했습니다."
   },
   {
     "time_offset_ms": 17000,
-    "target_id": "CELL_01",
     "sender_id": "AGV_SERVER",
     "receiver_id": "CELL_01",
     "message_type": "COMMAND",
     "command": "START_PROCESS",
-    "task_id": "CMD_CELL_01",
-    "payload": {
-      "target_agv": "AGV_01",
-      "process_type": "ASSEMBLY"
-    },
-    "description": "[AGV_SERVER->CELL] 명령: AGV 도착했으니 작업 시작해주세요"
+    "description": "AGV_01 작업을 시작합니다."
   },
+
   {
-    "time_offset_ms": 22000,
-    "target_id": "AGV_SERVER",
-    "sender_id": "CELL_01",
-    "receiver_id": "AGV_SERVER",
-    "message_type": "RESPONSE",
-    "command": "OP_COMPLETE",
-    "task_id": "EVT_CELL_01",
-    "payload": {
-      "result": "SUCCESS"
-    },
-    "description": "[CELL->AGV_SERVER] 응답: 작업 완료했습니다"
-  },
-  {
-    "time_offset_ms": 25000,
-    "target_id": "AGV_01",
-    "sender_id": "AGV_SERVER",
-    "receiver_id": "AGV_01",
-    "message_type": "COMMAND",
-    "command": "MOVE_PATH",
-    "task_id": "TASK_AGV_02",
-    "payload": {
-      "final_dest": "CELL_03",
-      "waypoints": ["QR_C1_OUT", "QR_L3", "QR_C3_IN"]
-    },
-    "description": "[AGV_SERVER->AGV] 명령: CELL_03 앞으로 이동해주세요"
-  },
-  {
-    "time_offset_ms": 35000,
-    "target_id": "AGV_SERVER",
-    "sender_id": "AGV_01",
+    "time_offset_ms": 19000,
+    "sender_id": "AGV_02",
     "receiver_id": "AGV_SERVER",
     "message_type": "STATUS",
     "command": "NOTIFY_ARRIVAL",
-    "task_id": "EVT_AGV_ARR_02",
-    "payload": {
-      "current_loc": "CELL_03",
-      "status": "ARRIVED"
-    },
-    "description": "[AGV->AGV_SERVER] 보고: CELL_03 도착했습니다"
+    "description": "CELL_03 도착했습니다."
   },
   {
-    "time_offset_ms": 37000,
-    "target_id": "CELL_03",
+    "time_offset_ms": 21000,
     "sender_id": "AGV_SERVER",
     "receiver_id": "CELL_03",
     "message_type": "COMMAND",
     "command": "START_PROCESS",
-    "task_id": "CMD_CELL_03",
-    "payload": {
-      "target_agv": "AGV_01",
-      "process_type": "INSPECTION"
-    },
-    "description": "[AGV_SERVER->CELL] 명령: 작업 시작해주세요"
+    "description": "검사 작업을 시작합니다."
   },
+
   {
-    "time_offset_ms": 42000,
-    "target_id": "AGV_SERVER",
-    "sender_id": "CELL_03",
+    "time_offset_ms": 23000,
+    "sender_id": "CELL_01",
     "receiver_id": "AGV_SERVER",
     "message_type": "RESPONSE",
     "command": "OP_COMPLETE",
-    "task_id": "EVT_CELL_03",
-    "payload": {
-      "result": "SUCCESS"
-    },
-    "description": "[CELL->AGV_SERVER] 응답: 작업 완료했습니다"
+    "description": "작업 완료되었습니다."
   },
   {
-    "time_offset_ms": 45000,
-    "target_id": "AGV_01",
+    "time_offset_ms": 25000,
     "sender_id": "AGV_SERVER",
     "receiver_id": "AGV_01",
     "message_type": "COMMAND",
     "command": "MOVE_PATH",
-    "task_id": "TASK_AGV_FINISH",
-    "payload": {
-      "final_dest": "STATION_HOME",
-      "waypoints": ["QR_C3_OUT", "QR_HOME"]
-    },
-    "description": "[AGV_SERVER->AGV] 명령: 복귀해주세요"
+    "description": "HOME 위치로 복귀하겠습니다."
+  },
+
+  {
+    "time_offset_ms": 27000,
+    "sender_id": "CELL_03",
+    "receiver_id": "AGV_SERVER",
+    "message_type": "RESPONSE",
+    "command": "OP_COMPLETE",
+    "description": "검사 완료되었습니다."
+  },
+  {
+    "time_offset_ms": 29000,
+    "sender_id": "AGV_SERVER",
+    "receiver_id": "AGV_02",
+    "message_type": "COMMAND",
+    "command": "MOVE_PATH",
+    "description": "HOME 위치로 복귀하겠습니다."
   }
 ]
