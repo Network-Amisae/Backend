@@ -5,7 +5,6 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalTime;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,80 +12,79 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-// [NEW] WebSocket 관련 임포트
+// WebSocket 관련 임포트
 import org.java_websocket.server.WebSocketServer;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 
 public class AMRServer {
 
-    private static final int TCP_PORT = 8888; // AMR DCC 전용 포트
-    private static final int WS_PORT = 8889;  // [NEW] 웹 프론트엔드용 포트
-    private static final String SERVER_ID = "DCC_SERVER";
+    private static final int TCP_PORT = 8888; // AMR 통신용 포트 (기존 유지)
+    private static final int WS_PORT = 8889;  // 웹 모니터링용 포트 (기존 유지)
+    private static final String SERVER_ID = "AMR_SERVER"; // JSON 시나리오와 일치시킴
     private static final String SCENARIO_FILE = "amr_scenario.json";
 
-    // 시간 포맷터 (콘솔용 / JSON패킷용)
-    private static final DateTimeFormatter CONSOLE_TIME_FMT = DateTimeFormatter.ofPattern("HH:mm:ss");
-    private static final DateTimeFormatter ISO_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    // 시간 포맷터
+    private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
+    // 클라이언트 소켓 저장소
     private static Map<String, PrintWriter> clients = new ConcurrentHashMap<>();
 
-    // [NEW] 웹소켓 서버 인스턴스
+    // 웹소켓 서버 인스턴스
     private static SimpleWebSocketServer wsServer;
 
     public static void main(String[] args) {
-        log(">> [" + SERVER_ID + "] 시스템 시작 중...");
+        printLog("SYSTEM", "AMR 관제 시스템 부팅 중...");
 
-        // 1. [NEW] 웹소켓 서버 시작
+        // 1. 웹소켓 서버 시작
         wsServer = new SimpleWebSocketServer(WS_PORT);
         wsServer.start();
-        log(">> [Web] 웹소켓 방송 서버 시작됨 (Port: " + WS_PORT + ")");
+        printLog("SYSTEM", "웹소켓 방송 서버 시작 (Port: " + WS_PORT + ")");
 
         // 2. 시나리오 실행 스레드 시작
         new Thread(new ScenarioRunner(SCENARIO_FILE)).start();
 
         // 3. TCP 소켓 서버 시작
         try (ServerSocket serverSocket = new ServerSocket(TCP_PORT)) {
-            log(">> [TCP] AMR 연결 대기 중 (Port: " + TCP_PORT + ")");
+            printLog("SYSTEM", "TCP 연결 대기 중 (Port: " + TCP_PORT + ")");
             while (true) {
-                new AMRClientHandler(serverSocket.accept()).start();
+                new ClientHandler(serverSocket.accept()).start();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    // [NEW] 로그 헬퍼 메서드
-    private static void log(String msg) {
-        System.out.println("[" + LocalTime.now().format(CONSOLE_TIME_FMT) + "] " + msg);
+    // [예쁜 로그 출력 헬퍼]
+    private static void printPrettyLog(String type, String sender, String receiver, String text) {
+        String time = LocalTime.now().format(TIME_FMT);
+        String flow = String.format("%s -> %s", sender, receiver);
+        // 콘솔 출력 포맷 정렬
+        System.out.printf("[%s] [%-8s] %-25s : %s%n", time, type, flow, text);
     }
 
-    // --- [NEW] 웹소켓 서버 클래스 ---
+    // 시스템 로그용
+    private static void printLog(String tag, String msg) {
+        System.out.printf("[%s] [%-8s] %s%n", LocalTime.now().format(TIME_FMT), tag, msg);
+    }
+
+    // --- 웹소켓 서버 클래스 ---
     static class SimpleWebSocketServer extends WebSocketServer {
         public SimpleWebSocketServer(int port) {
             super(new InetSocketAddress(port));
         }
-
         @Override
         public void onOpen(WebSocket conn, ClientHandshake handshake) {
-            log(">> [Web] 대시보드 접속됨: " + conn.getRemoteSocketAddress());
+            // 조용히 접속 처리
         }
-
         @Override
-        public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-            // log(">> [Web] 접속 해제");
-        }
-
+        public void onClose(WebSocket conn, int code, String reason, boolean remote) {}
         @Override
-        public void onMessage(WebSocket conn, String message) { }
-
+        public void onMessage(WebSocket conn, String message) {}
         @Override
-        public void onError(WebSocket conn, Exception ex) {
-            ex.printStackTrace();
-        }
-
+        public void onError(WebSocket conn, Exception ex) { ex.printStackTrace(); }
         @Override
-        public void onStart() { }
+        public void onStart() {}
     }
 
     // --- 시나리오 실행기 ---
@@ -100,18 +98,18 @@ public class AMRServer {
         @Override
         public void run() {
             try {
-                log(">> [Scenario] 5초 후 시나리오를 시작합니다. (AMR 접속 대기)");
+                printLog("SCENARIO", "5초 후 시나리오를 시작합니다.");
                 Thread.sleep(5000);
 
                 File file = new File(filePath);
                 if (!file.exists()) {
-                    log(">> [Scenario Error] 파일이 없습니다: " + filePath);
+                    printLog("ERROR", "파일 없음: " + filePath);
                     return;
                 }
 
                 String content = new String(Files.readAllBytes(Paths.get(filePath)));
                 JSONArray scenarios = new JSONArray(content);
-                log(">> [Scenario] 로드 완료 (" + scenarios.length() + " steps)");
+                printLog("SCENARIO", "로드 완료 (" + scenarios.length() + " steps)");
 
                 long startTime = System.currentTimeMillis();
 
@@ -119,72 +117,75 @@ public class AMRServer {
                     JSONObject step = scenarios.getJSONObject(i);
                     long offset = step.getLong("time_offset_ms");
 
+                    // 타이밍 맞추기
                     long currentTime = System.currentTimeMillis() - startTime;
                     long waitTime = offset - currentTime;
-
                     if (waitTime > 0) Thread.sleep(waitTime);
 
-                    executeScenarioStep(step);
+                    processScenarioStep(step);
                 }
-                log(">> [Scenario] 모든 시나리오 종료.");
+                printLog("SCENARIO", "모든 시나리오 종료.");
 
             } catch (Exception e) {
-                log(">> [Scenario Runtime Error]");
                 e.printStackTrace();
             }
         }
 
-        private void executeScenarioStep(JSONObject step) {
-            String targetId = step.getString("target_id");
+        private void processScenarioStep(JSONObject step) {
+            // 1. JSON 정보 추출
+            String sender = step.getString("sender_id");
+            String receiver = step.getString("receiver_id");
+            String type = step.getString("message_type");
             String command = step.getString("command");
-            String desc = step.optString("description", "Mission Assigned");
+            String desc = step.getString("description");
+            String taskId = step.optString("task_id", "TASK_AMR_00");
 
+            // 2. 전송할 패킷 생성
             JSONObject packet = new JSONObject();
-
             JSONObject header = new JSONObject();
-            header.put("type", "COMMAND");
-            header.put("sender_id", SERVER_ID);
-            header.put("receiver_id", targetId);
-            header.put("timestamp", ZonedDateTime.now().format(ISO_FORMATTER));
-            header.put("log_text", "[지시] " + desc);
+            header.put("type", type);
+            header.put("sender_id", sender);
+            header.put("receiver_id", receiver);
+            header.put("timestamp", LocalTime.now().format(TIME_FMT));
+            header.put("log_text", desc);
             packet.put("header", header);
 
             JSONObject body = new JSONObject();
-            body.put("task_id", step.optString("task_id", "AUTO_" + System.currentTimeMillis() % 1000));
+            body.put("task_id", taskId);
             body.put("command", command);
             if (step.has("payload")) {
                 body.put("payload", step.getJSONObject("payload"));
-            } else {
-                body.put("payload", new JSONObject());
             }
             packet.put("body", body);
 
             String jsonStr = packet.toString();
 
-            // 1. TCP 전송
-            PrintWriter writer = clients.get(targetId);
-            if (writer != null) {
-                writer.println(jsonStr);
-                log(">> [Scenario -> " + targetId + "] Mission: " + desc);
-            } else {
-                log(">> [Scenario Error] 타겟 미접속: " + targetId);
-            }
+            // 3. 로그 출력
+            printPrettyLog(type, sender, receiver, desc);
 
-            // 2. [NEW] 웹소켓 브로드캐스트
+            // 4. 웹소켓 브로드캐스트 (웹 UI 시뮬레이션용)
             if (wsServer != null) {
                 wsServer.broadcast(jsonStr);
+            }
+
+            // 5. TCP 전송 (서버가 보내는 명령일 경우에만)
+            if (sender.contains("SERVER")) {
+                PrintWriter writer = clients.get(receiver);
+                if (writer != null) {
+                    writer.println(jsonStr);
+                }
             }
         }
     }
 
-    // --- AMR 클라이언트 핸들러 ---
-    private static class AMRClientHandler extends Thread {
+    // --- 클라이언트 핸들러 (AMR/CELL 공용) ---
+    private static class ClientHandler extends Thread {
         private Socket socket;
         private PrintWriter out;
         private BufferedReader in;
         private String clientID = null;
 
-        public AMRClientHandler(Socket socket) {
+        public ClientHandler(Socket socket) {
             this.socket = socket;
         }
 
@@ -195,83 +196,46 @@ public class AMRServer {
 
                 String line;
                 while ((line = in.readLine()) != null) {
-                    processPacket(line);
+                    handleIncomingPacket(line);
                 }
             } catch (IOException e) {
-                // 접속 종료
+                // 접속 끊김
             } finally {
                 if (clientID != null) {
                     clients.remove(clientID);
-                    log(">> [접속 종료] " + clientID);
+                    printLog("TCP", clientID + " 접속 해제");
                 }
             }
         }
 
-        private void processPacket(String jsonStr) {
+        private void handleIncomingPacket(String jsonStr) {
             try {
-                // 1. [NEW] 들어온 패킷을 그대로 웹소켓으로 중계 (Broadcast)
+                JSONObject root = new JSONObject(jsonStr);
+                JSONObject header = root.getJSONObject("header");
+
+                String sender = header.getString("sender_id");
+                String receiver = header.getString("receiver_id");
+                String type = header.getString("type");
+                String desc = header.optString("log_text", "");
+
+                // ID 등록 (최초 1회)
+                if (clientID == null) {
+                    clientID = sender;
+                    clients.put(clientID, out);
+                    printLog("TCP", clientID + " 연결됨 (" + socket.getInetAddress() + ")");
+                }
+
+                // 1. 로그 출력
+                printPrettyLog(type, sender, receiver, desc);
+
+                // 2. 웹소켓 중계
                 if (wsServer != null) {
                     wsServer.broadcast(jsonStr);
                 }
 
-                // 2. 패킷 파싱
-                JSONObject root = new JSONObject(jsonStr);
-                JSONObject header = root.getJSONObject("header");
-                JSONObject body = root.getJSONObject("body");
-
-                String type = header.getString("type");
-                String sender = header.getString("sender_id");
-
-                if (clientID == null) {
-                    clientID = sender;
-                    clients.put(clientID, out);
-                    log(">> [접속] " + clientID + " 연결됨.");
-                }
-
-                log("<< [" + sender + " - " + type + "]");
-
-                switch (type) {
-                    case "STATUS":
-                        handleStatus(sender, body);
-                        break;
-                    case "ACK":
-                        handleAck(sender, body);
-                        break;
-                    case "LOG":
-                        handleLog(sender, body);
-                        break;
-                    default:
-                        log("   [WARNING] Unknown Type: " + type);
-                }
-
             } catch (Exception e) {
-                log("<< [ERROR] Parsing Failed: " + e.getMessage());
+                System.out.println("Invalid Packet: " + e.getMessage());
             }
-        }
-
-        private void handleStatus(String sender, JSONObject body) {
-            String deviceType = body.optString("device_type");
-            String mode = body.optString("mode");
-
-            if ("AMR".equals(deviceType)) {
-                log("   - STATUS: " + sender + " 모드: " + mode);
-            } else if ("CELL".equals(deviceType)) {
-                // [개선] CELL인 경우 경고 대신 정상 로그 출력
-                log("   - [Cell Report] " + sender + " 현재 상태: " + mode);
-            } else {
-                log("   - WARNING: Unknown Device (" + deviceType + ")");
-            }
-        }
-
-        private void handleAck(String sender, JSONObject body) {
-            String taskId = body.optString("task_id", "N/A");
-            String command = body.optString("command", "ACK");
-            log("   - ACK: Task " + taskId + " 완료/도착 (" + command + ")");
-        }
-
-        private void handleLog(String sender, JSONObject body) {
-            String text = body.optString("message_text", "");
-            log("   - LOG: " + text);
         }
     }
 }
