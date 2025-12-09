@@ -1,16 +1,16 @@
 [
   {
     "time_offset_ms": 5000,
-    "sender_id": "AGV_SERVER",
-    "receiver_id": "AGV_01",
+    "sender_id": "AGV_01",
+    "receiver_id": "CELL_01",
     "message_type": "COMMAND",
     "command": "MOVE_PATH",
     "description": "CELL_01로 이동합니다."
   },
   {
     "time_offset_ms": 8000,
-    "sender_id": "AGV_SERVER",
-    "receiver_id": "AGV_02",
+    "sender_id": "AGV_02",
+    "receiver_id": "CELL_03",
     "message_type": "COMMAND",
     "command": "MOVE_PATH",
     "description": "CELL_03로 이동합니다."
@@ -19,15 +19,15 @@
   {
     "time_offset_ms": 15000,
     "sender_id": "AGV_01",
-    "receiver_id": "AGV_SERVER",
+    "receiver_id": "CELL_01",
     "message_type": "STATUS",
     "command": "NOTIFY_ARRIVAL",
     "description": "CELL_01 도착했습니다."
   },
   {
     "time_offset_ms": 17000,
-    "sender_id": "AGV_SERVER",
-    "receiver_id": "CELL_01",
+    "sender_id": "CELL_01",
+    "receiver_id": "AGV_01",
     "message_type": "COMMAND",
     "command": "START_PROCESS",
     "description": "AGV_01 작업을 시작합니다."
@@ -36,15 +36,15 @@
   {
     "time_offset_ms": 19000,
     "sender_id": "AGV_02",
-    "receiver_id": "AGV_SERVER",
+    "receiver_id": "CELL_03",
     "message_type": "STATUS",
     "command": "NOTIFY_ARRIVAL",
     "description": "CELL_03 도착했습니다."
   },
   {
     "time_offset_ms": 21000,
-    "sender_id": "AGV_SERVER",
-    "receiver_id": "CELL_03",
+    "sender_id": "CELL_03",
+    "receiver_id": "AGV_02",
     "message_type": "COMMAND",
     "command": "START_PROCESS",
     "description": "검사 작업을 시작합니다."
@@ -53,15 +53,15 @@
   {
     "time_offset_ms": 23000,
     "sender_id": "CELL_01",
-    "receiver_id": "AGV_SERVER",
+    "receiver_id": "AGV_01",
     "message_type": "RESPONSE",
     "command": "OP_COMPLETE",
-    "description": "작업 완료되었습니다."
+    "description": "CELL_01 작업 완료되었습니다."
   },
   {
     "time_offset_ms": 25000,
-    "sender_id": "AGV_SERVER",
-    "receiver_id": "AGV_01",
+    "sender_id": "AGV_01",
+    "receiver_id": "CELL_01",
     "message_type": "COMMAND",
     "command": "MOVE_PATH",
     "description": "HOME 위치로 복귀하겠습니다."
@@ -70,15 +70,15 @@
   {
     "time_offset_ms": 27000,
     "sender_id": "CELL_03",
-    "receiver_id": "AGV_SERVER",
+    "receiver_id": "AGV_02",
     "message_type": "RESPONSE",
     "command": "OP_COMPLETE",
     "description": "검사 완료되었습니다."
   },
   {
     "time_offset_ms": 29000,
-    "sender_id": "AGV_SERVER",
-    "receiver_id": "AGV_02",
+    "sender_id": "AGV_02",
+    "receiver_id": "CELL_03",
     "message_type": "COMMAND",
     "command": "MOVE_PATH",
     "description": "HOME 위치로 복귀하겠습니다."

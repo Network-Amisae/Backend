@@ -1,16 +1,16 @@
 [
   {
     "time_offset_ms": 5000,
-    "sender_id": "AMR_SERVER",
-    "receiver_id": "AMR_01",
+    "sender_id": "AMR_01",
+    "receiver_id": "CELL_02",
     "message_type": "COMMAND",
     "command": "MOVE_PATH",
     "description": "CELL_02로 이동합니다."
   },
   {
     "time_offset_ms": 7000,
-    "sender_id": "AMR_SERVER",
-    "receiver_id": "AMR_02",
+    "sender_id": "AMR_02",
+    "receiver_id": "CELL_04",
     "message_type": "COMMAND",
     "command": "MOVE_PATH",
     "description": "CELL_04로 이동합니다."
@@ -19,7 +19,7 @@
   {
     "time_offset_ms": 15000,
     "sender_id": "AMR_01",
-    "receiver_id": "AMR_SERVER",
+    "receiver_id": "CELL_02",
     "message_type": "STATUS",
     "command": "NOTIFY_ARRIVAL",
     "description": "CELL_02 도착했습니다."
@@ -27,7 +27,7 @@
   {
     "time_offset_ms": 16000,
     "sender_id": "AMR_02",
-    "receiver_id": "AMR_SERVER",
+    "receiver_id": "CELL_04",
     "message_type": "STATUS",
     "command": "NOTIFY_ARRIVAL",
     "description": "CELL_04 도착했습니다."
@@ -35,16 +35,16 @@
 
   {
     "time_offset_ms": 18000,
-    "sender_id": "AMR_SERVER",
-    "receiver_id": "CELL_02",
+    "sender_id": "CELL_02",
+    "receiver_id": "AMR_01",
     "message_type": "COMMAND",
     "command": "START_PROCESS",
     "description": "CELL_02 적재 작업을 시작합니다."
   },
   {
     "time_offset_ms": 18500,
-    "sender_id": "AMR_SERVER",
-    "receiver_id": "CELL_04",
+    "sender_id": "CELL_04",
+    "receiver_id": "AMR_02",
     "message_type": "COMMAND",
     "command": "START_PROCESS",
     "description": "CELL_04 하역 작업을 시작합니다."
@@ -53,7 +53,7 @@
   {
     "time_offset_ms": 23000,
     "sender_id": "CELL_02",
-    "receiver_id": "AMR_SERVER",
+    "receiver_id": "AMR_01",
     "message_type": "RESPONSE",
     "command": "OP_COMPLETE",
     "description": "CELL_02 적재 완료되었습니다."
@@ -61,7 +61,7 @@
   {
     "time_offset_ms": 24000,
     "sender_id": "CELL_04",
-    "receiver_id": "AMR_SERVER",
+    "receiver_id": "AMR_02",
     "message_type": "RESPONSE",
     "command": "OP_COMPLETE",
     "description": "CELL_04 하역 완료되었습니다."
@@ -69,16 +69,16 @@
 
   {
     "time_offset_ms": 27000,
-    "sender_id": "AMR_SERVER",
-    "receiver_id": "AMR_01",
+    "sender_id": "AMR_01",
+    "receiver_id": "CELL_02",
     "message_type": "COMMAND",
     "command": "MOVE_PATH",
     "description": "HOME 위치로 복귀합니다."
   },
   {
     "time_offset_ms": 27500,
-    "sender_id": "AMR_SERVER",
-    "receiver_id": "AMR_02",
+    "sender_id": "AMR_02",
+    "receiver_id": "CELL_04",
     "message_type": "COMMAND",
     "command": "MOVE_PATH",
     "description": "HOME 위치로 복귀합니다."
