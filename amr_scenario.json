@@ -1,124 +1,56 @@
 [
   {
-    "time_offset_ms": 8000,
-    "target_id": "AMR_01",
-    "sender_id": "AMR_SERVER",
-    "receiver_id": "AMR_01",
-    "message_type": "COMMAND",
-    "command": "MOVE_PATH",
-    "task_id": "TASK_001",
-    "payload": {
-      "final_dest": "CELL_02",
-      "action": "MOVE_ONLY"
-    },
-    "description": "[AMR_SERVER->AMR] 명령: CELL_02 앞으로 이동해주세요"
-  },
-  {
-    "time_offset_ms": 18000,
+    "time_offset_ms": 13000,
     "target_id": "AMR_SERVER",
     "sender_id": "AMR_01",
     "receiver_id": "AMR_SERVER",
     "message_type": "STATUS",
     "command": "NOTIFY_ARRIVAL",
-    "task_id": "EVT_ARRIVE_02",
-    "payload": {
-      "current_loc": "CELL_02",
-      "status": "ARRIVED"
-    },
-    "description": "[AMR->AMR_SERVER] 보고: 저 CELL_02 앞에 도착했습니다"
+    "description": "[보고] AMR_01, 2번 셀 도착했습니다."
+  },
+  {
+    "time_offset_ms": 15000,
+    "target_id": "CELL_02",
+    "sender_id": "AMR_01",
+    "receiver_id": "CELL_02",
+    "message_type": "REQUEST",
+    "command": "REQ_LOAD",
+    "description": "[요청] CELL_02님, 적재 작업 부탁드립니다."
+  },
+  {
+    "time_offset_ms": 17000,
+    "target_id": "AMR_SERVER",
+    "sender_id": "AMR_02",
+    "receiver_id": "AMR_SERVER",
+    "message_type": "STATUS",
+    "command": "NOTIFY_ARRIVAL",
+    "description": "[보고] AMR_02, 4번 셀 도착했습니다."
+  },
+  {
+    "time_offset_ms": 19000,
+    "target_id": "CELL_04",
+    "sender_id": "AMR_02",
+    "receiver_id": "CELL_04",
+    "message_type": "REQUEST",
+    "command": "REQ_UNLOAD",
+    "description": "[요청] CELL_04님, 하역 작업 부탁드립니다."
   },
   {
     "time_offset_ms": 20000,
-    "target_id": "CELL_02",
-    "sender_id": "AMR_SERVER",
-    "receiver_id": "CELL_02",
-    "message_type": "COMMAND",
-    "command": "START_LOAD_OP",
-    "task_id": "CMD_CELL_01",
-    "payload": {
-      "target_amr": "AMR_01",
-      "tray_id": "TRAY_A10"
-    },
-    "description": "[AMR_SERVER->CELL] 명령: AMR_01 대기중이니 적재 작업 시작해주세요"
-  },
-  {
-    "time_offset_ms": 25000,
-    "target_id": "AMR_SERVER",
+    "target_id": "AMR_01",
     "sender_id": "CELL_02",
-    "receiver_id": "AMR_SERVER",
-    "message_type": "RESPONSE",
-    "command": "OP_COMPLETE",
-    "task_id": "EVT_CELL_01",
-    "payload": {
-      "result": "SUCCESS"
-    },
-    "description": "[CELL->AMR_SERVER] 응답: 적재 작업 완료했습니다"
-  },
-  {
-    "time_offset_ms": 30000,
-    "target_id": "AMR_01",
-    "sender_id": "AMR_SERVER",
     "receiver_id": "AMR_01",
-    "message_type": "COMMAND",
-    "command": "MOVE_PATH",
-    "task_id": "TASK_002",
-    "payload": {
-      "final_dest": "CELL_04",
-      "action": "MOVE_ONLY"
-    },
-    "description": "[AMR_SERVER->AMR] 명령: 이제 CELL_04로 이동해주세요"
+    "message_type": "RESPONSE",
+    "command": "RES_LOAD",
+    "description": "[응답] AMR_01님, 적재 완료. 출발하셔도 됩니다."
   },
   {
-    "time_offset_ms": 40000,
-    "target_id": "AMR_SERVER",
-    "sender_id": "AMR_01",
-    "receiver_id": "AMR_SERVER",
-    "message_type": "STATUS",
-    "command": "NOTIFY_ARRIVAL",
-    "task_id": "EVT_ARRIVE_04",
-    "payload": {
-      "current_loc": "CELL_04",
-      "status": "ARRIVED"
-    },
-    "description": "[AMR->AMR_SERVER] 보고: CELL_04 도착했습니다"
-  },
-  {
-    "time_offset_ms": 42000,
-    "target_id": "CELL_04",
-    "sender_id": "AMR_SERVER",
-    "receiver_id": "CELL_04",
-    "message_type": "COMMAND",
-    "command": "START_UNLOAD_OP",
-    "task_id": "CMD_CELL_02",
-    "payload": {
-      "target_amr": "AMR_01"
-    },
-    "description": "[AMR_SERVER->CELL] 명령: 하역 작업 시작해주세요"
-  },
-  {
-    "time_offset_ms": 47000,
-    "target_id": "AMR_SERVER",
+    "time_offset_ms": 24000,
+    "target_id": "AMR_02",
     "sender_id": "CELL_04",
-    "receiver_id": "AMR_SERVER",
+    "receiver_id": "AMR_02",
     "message_type": "RESPONSE",
-    "command": "OP_COMPLETE",
-    "task_id": "EVT_CELL_02",
-    "payload": {
-      "result": "SUCCESS"
-    },
-    "description": "[CELL->AMR_SERVER] 응답: 하역 작업 완료했습니다"
-  },
-  {
-    "time_offset_ms": 50000,
-    "target_id": "AMR_01",
-    "sender_id": "AMR_SERVER",
-    "receiver_id": "AMR_01",
-    "message_type": "COMMAND",
-    "command": "MOVE_PATH",
-    "task_id": "TASK_FINISH",
-    "payload": {
-      "final_dest": "STATION_CHARGE"
-    },
-    "description": "[AMR_SERVER->AMR] 명령: 충전소로 이동해주세요"
+    "command": "RES_UNLOAD",
+    "description": "[응답] AMR_02님, 하역 완료. 수고하셨습니다."
   }
 ]
